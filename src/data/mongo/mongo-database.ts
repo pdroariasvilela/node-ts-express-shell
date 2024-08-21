@@ -1,5 +1,7 @@
 import mongoose from "mongoose"
 
+//INSTALAR EL MONGOOSE PARA HACER LA CONEXION 
+
 interface  Options { 
     dbName : string ,
     mongoUrl : string 
