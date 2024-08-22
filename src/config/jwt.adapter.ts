@@ -20,6 +20,6 @@ export class JwtAdapter {
       }
 
       static validateToken (token:string) {
-
+        return "Funcion no implentada"
       }
 }
