@@ -1,7 +1,7 @@
 import { Model } from "mongoose";
 import { UserModel } from "../../data";
 import { CustomError, RegisterUserDto, UserEntity } from "../../domain";
-import { bcryptAdapter } from "../../config";
+import { JwtAdapter, bcryptAdapter } from "../../config";
 import { LoginUserDto } from "../../domain/dtos/auth/login-user.dto";
 
 export class AuthServices {
@@ -29,7 +29,7 @@ export class AuthServices {
     }
   }
 
-  
+
 
   public async loginUser(loginUserDto: LoginUserDto) {
     const user = await UserModel.findOne({ email: loginUserDto.email });
@@ -45,9 +45,12 @@ export class AuthServices {
 
     const { password, ...userEntity } = UserEntity.fromObject(user);
 
+    const token  = await JwtAdapter.generateToken({id : user.id , email : user.email})
+    if(!token) throw CustomError.internalServer("JWT not generate")
+
     return {
       user: userEntity,
-      token: "AVEX12893JMS",
+      token: token,
     };
   }
 }
