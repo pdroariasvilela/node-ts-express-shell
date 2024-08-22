@@ -9,14 +9,13 @@ import { Server } from './presentation/server';
 })();
 
 
-function main() {
+async function main() {
 
-  async function main () {
     await MongoDatabase.connect({
-      mongoUrl : envs.MONGO_URL,
-      dbName : envs.MONGO_DB_NAME 
+      dbName : envs.MONGO_DB_NAME ,
+      mongoUrl : envs.MONGO_URL
     });
-  }
+
 
   const server = new Server({
     port: envs.PORT,
