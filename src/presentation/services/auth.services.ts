@@ -1,5 +1,8 @@
+import { Model } from "mongoose";
 import { UserModel } from "../../data";
-import { CustomError, RegisterUserDto } from "../../domain";
+import { CustomError, RegisterUserDto, UserEntity } from "../../domain";
+import { bcryptAdapter } from "../../config";
+import { LoginUserDto } from "../../domain/dtos/auth/login-user.dto";
 
 export class AuthServices {
   constructor() {}
@@ -9,6 +12,42 @@ export class AuthServices {
 
     if (existUser) throw CustomError.badRequest("Email already exist");
 
-    return "todo ok";
+    try {
+      const user = new UserModel(registerUserDTO);
+
+      user.password = bcryptAdapter.hash(registerUserDTO.password);
+
+      await user.save();
+
+      const { password, ...userEntities } = UserEntity.fromObject(user);
+      return {
+        user: userEntities,
+        token: "ABC123",
+      };
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+  }
+
+  
+
+  public async loginUser(loginUserDto: LoginUserDto) {
+    const user = await UserModel.findOne({ email: loginUserDto.email });
+
+    if (!user) return CustomError.badRequest("Email not exist");
+
+    const resultEmailcheck = bcryptAdapter.compare(
+      loginUserDto.password,
+      user.password!
+    );
+    if (!resultEmailcheck)
+      throw CustomError.badRequest("Password is not invalid");
+
+    const { password, ...userEntity } = UserEntity.fromObject(user);
+
+    return {
+      user: userEntity,
+      token: "AVEX12893JMS",
+    };
   }
 }
